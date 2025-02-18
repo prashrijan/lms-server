@@ -4,12 +4,14 @@ import { conf } from "./src/conf/conf.js";
 import { connectDb } from "./src/db/dbConfig.js";
 import authRouter from "./src/routes/authRoutes.js";
 import bookRouter from "./src/routes/bookRoutes.js";
+import { errorMiddleware } from "./src/middlewares/errorMiddleware.js";
 
 const app = express();
 const PORT = conf.port;
 
 app.use(cors());
 app.use(express.json());
+app.use(errorMiddleware);
 
 // database connection
 connectDb()

@@ -42,7 +42,7 @@ const authenticateUser = async (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
     try {
-        if (req.userData.role !== "admin") {
+        if (req.userData.role === "admin") {
             next();
         } else {
             return res.status(400).json({

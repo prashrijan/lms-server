@@ -40,6 +40,10 @@ const bookSchema = new Schema(
             type: Number,
             default: 0,
         },
+        genre: {
+            type: String,
+            required: true,
+        },
     },
     { timestamps: true }
 );
