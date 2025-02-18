@@ -3,33 +3,38 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { conf } from "../conf/conf.js";
 
-const userSchema = new Schema({
-    fName: {
-        type: String,
-        required: true,
+const userSchema = new Schema(
+    {
+        fName: {
+            type: String,
+            required: true,
+        },
+        lName: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        phone: {
+            type: String,
+            required: true,
+        },
+        role: {
+            type: String,
+            enum: ["admin", "student"],
+            default: "student",
+        },
     },
-    lName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    phone: {
-        type: String,
-        required: true,
-    },
-    role: {
-        type: String,
-        enum: ["admin", "student"],
-        default: "student",
-    },
-});
+    {
+        timestamps: true,
+    }
+);
 
 // hash password before saving user to the database
 userSchema.pre("save", async function (next) {
@@ -51,9 +56,11 @@ userSchema.methods.generateAccessToken = function () {
         },
         conf.jwtSecret,
         {
-            expiresIn: conf.jwtExpirty,
+            expiresIn: conf.jwtExpiry,
         }
     );
 };
+
+// generate refresh token
 
 export const User = new mongoose.model("User", userSchema);

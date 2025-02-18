@@ -1,4 +1,6 @@
-import { User } from "../models/userModel.js";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 // register user controller
 const registerUser = async (req, res) => {
@@ -15,18 +17,15 @@ const registerUser = async (req, res) => {
             !password &&
             !confirmPassword
         ) {
-            return res.status(400).json({
-                status: "error",
-                message: "All fields are required",
-            });
+            throw new ApiError(400, "All fields are required");
         }
 
         // check if password and confirm password match
         if (password !== confirmPassword) {
-            return res.status(400).json({
-                status: "error",
-                message: "Confirm password and password must match",
-            });
+            throw new ApiError(
+                400,
+                "Confirm Password and password must match."
+            );
         }
 
         // check if user already exists
@@ -34,10 +33,10 @@ const registerUser = async (req, res) => {
             $or: [{ email }, { phone }],
         });
         if (existedUser) {
-            return res.status(409).json({
-                status: "errpr",
-                message: "User with this email or phone already exists.",
-            });
+            throw new ApiError(
+                409,
+                "User with this email or phone already exists."
+            );
         }
 
         // create the user
@@ -52,17 +51,18 @@ const registerUser = async (req, res) => {
         // remove the password field in res
         const createdUser = await User.findById(user._id).select("-password");
 
-        return res.status(200).json({
-            status: "success",
-            message: "User created successfully.",
-            data: createdUser,
-        });
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(
+                    200,
+                    createdUser,
+                    "User registered successfully."
+                )
+            );
     } catch (error) {
         console.error(`Internal Server Error : ${error}`);
-        return res.status(500).json({
-            status: "error",
-            message: "Internal Server Error",
-        });
+        throw new ApiError(500, "Server error registering user.");
     }
 };
 
@@ -73,30 +73,21 @@ const loginUser = async (req, res) => {
 
         // check if all fields are empty
         if (!email && !password) {
-            return res.status(400).json({
-                status: "error",
-                message: "All fields are required",
-            });
+            throw new ApiError(400, "All fields are required.");
         }
 
         // find the user
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({
-                status: "error",
-                message: "User doesnot exists.",
-            });
+            throw new ApiError(404, "User doesnot exists.");
         }
 
         // check the password
         const isPasswordValid = await user.isPasswordCorrect(password);
 
         if (!isPasswordValid) {
-            return res.status(401).json({
-                status: "error",
-                message: "Invalid password",
-            });
+            throw new ApiError(401, "Invalid password.");
         }
 
         // generate access token
@@ -109,17 +100,12 @@ const loginUser = async (req, res) => {
             user: foundUser,
         };
 
-        return res.status(201).json({
-            status: "success",
-            message: "Login successfull",
-            data,
-        });
+        return res
+            .status(201)
+            .json(new ApiResponse(200, data, "Login Successfully"));
     } catch (error) {
         console.error(`Internal Server Error : ${error}`);
-        return res.status(500).json({
-            status: "error",
-            message: "Internal Server Error",
-        });
+        throw new ApiError(500, "Server error while logging in.");
     }
 };
 
@@ -127,6 +113,6 @@ const loginUser = async (req, res) => {
 const logoutUser = async () => {};
 
 // renew jwt
-const renewJwt = async () => {};
+const refreshAccessToken = async () => {};
 
-export { registerUser, loginUser, logoutUser, renewJwt };
+export { registerUser, loginUser, logoutUser, refreshAccessToken };

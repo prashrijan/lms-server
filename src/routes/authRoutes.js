@@ -3,12 +3,13 @@ import {
     registerUser,
     loginUser,
     logoutUser,
-    renewJwt,
-} from "../controllers/authController.js";
+    refreshAccessToken,
+} from "../controllers/authControllers.js";
 import {
     registerUserValidator,
     loginUserValidator,
 } from "../middlewares/joiValidation.js";
+import { authenticateUser, isAdmin } from "../middlewares/authenticateUser.js";
 
 const authRouter = express.Router();
 
@@ -16,6 +17,6 @@ const authRouter = express.Router();
 authRouter.route("/register").post(registerUserValidator, registerUser);
 authRouter.route("/login").post(loginUserValidator, loginUser);
 authRouter.route("/logout").post(logoutUser);
-authRouter.route("/renew-jwt").post(renewJwt);
+authRouter.route("/refersh-token").post(refreshAccessToken);
 
 export default authRouter;

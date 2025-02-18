@@ -13,16 +13,16 @@ Content-Type: application/json
     "confirmPassword": "prashrijan"
 }
 
-
-
-
-
 ###login user
 POST {{rootUrl}}/login
 Content-Type: application/json
 
 {
     "email" : "shresthaprashrijan@gmail.com",
-    "password": ""
+    "password": "prashrijan"
 }
 
+
+###
+GET {{rootUrl}}
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNocmVzdGhhcHJhc2hyaWphbkBnbWFpbC5jb20iLCJpYXQiOjE3Mzk4NDAyODgsImV4cCI6MTczOTkyNjY4OH0.pabvCd8L_NkLUyQklsBhWrELHRNhuxigEjkhpJoLLnQ

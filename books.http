@@ -1,0 +1,33 @@
+@rooturl = http://localhost:8000/api/v1/books
+
+POST  {{rooturl}}/create-book
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNocmVzdGhhcHJhc2hyaWphbkBnbWFpbC5jb20iLCJpYXQiOjE3Mzk4NDcxMTIsImV4cCI6MTczOTkzMzUxMn0.tJBnS02YKjqX54Lz5Qt_OpAeozSyWLkQdBHpIQqOZwo
+
+{
+    "title" : "To kill a mocking bird",
+    "author" : "preashrijan",
+    "thumbnail" : "Jpeg",
+    "isbn" : "2020",
+    "genre" : "Comedy",
+    "publishedYear" : 2020,
+    "availability" : true,
+    "status" : "active",
+    "averageRating" : 5, 
+    "description" : ""
+}
+
+
+###
+PATCH {{rooturl}}/update-book/67b404520dba3d2adafd7b50
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNocmVzdGhhcHJhc2hyaWphbkBnbWFpbC5jb20iLCJpYXQiOjE3Mzk4NDcxMTIsImV4cCI6MTczOTkzMzUxMn0.tJBnS02YKjqX54Lz5Qt_OpAeozSyWLkQdBHpIQqOZwo
+
+{
+    "title" : "How to stay sad",
+    "author" : "Prashrijan",
+    "availability" : true,
+    "averageRating" : 4,
+    "isbn" : "676767676767",
+    "description" : "how to be sad and happy together"
+}
