@@ -1,9 +1,10 @@
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { NextFunction, Request, Response } from "express";
 
 // register user controller
-const registerUser = async (req, res) => {
+const registerUser = async (req: Request, res: Response): Promise<any> => {
     try {
         const { fName, lName, email, phone, password, confirmPassword } =
             req.body;
@@ -67,7 +68,7 @@ const registerUser = async (req, res) => {
 };
 
 // login user controller
-const loginUser = async (req, res) => {
+const loginUser = async (req: Request, res: Response): Promise<any> => {
     try {
         const { email, password } = req.body;
 

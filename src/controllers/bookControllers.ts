@@ -1,9 +1,14 @@
+import { NextFunction, Request, Response } from "express";
 import { Book } from "../models/book.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 // create book (admin only)
-const createBook = async (req, res, next) => {
+const createBook = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         const {
             title,
@@ -62,7 +67,11 @@ const createBook = async (req, res, next) => {
 };
 
 // update book (admin only)
-const updateBook = async (req, res, next) => {
+const updateBook = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         // get the id
         const bookId = req.params.id;
@@ -89,7 +98,11 @@ const updateBook = async (req, res, next) => {
 };
 
 // delete a book (admin only)
-const deleteBook = async (req, res, next) => {
+const deleteBook = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         // get the id of the book from the req params
         const bookId = req.params.id;
@@ -122,7 +135,11 @@ const deleteBook = async (req, res, next) => {
 };
 
 // retrieve books by filters
-const getBookByFilter = async (req, res, next) => {
+const getBookByFilter = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         // get the filter from req query
         const filter = req.query;
@@ -149,7 +166,11 @@ const getBookByFilter = async (req, res, next) => {
 };
 
 // retrive the books by id
-const getBookById = async (req, res, next) => {
+const getBookById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         // get the id from req params
         const bookId = req.params.id;
@@ -170,4 +191,74 @@ const getBookById = async (req, res, next) => {
         );
     }
 };
-export { createBook, updateBook, deleteBook, getBookByFilter, getBookById };
+
+// get all active books for user
+const getActiveBooksUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const books = await Book.find({
+            isAvailable: true,
+        });
+
+        if (!books) {
+            throw new ApiError(404, "Book not found");
+        }
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(
+                    200,
+                    books,
+                    "Book for users found successfully."
+                )
+            );
+    } catch (error) {
+        console.log(`Error getting the active books for user : ${error}`);
+        return next(
+            new ApiError(
+                500,
+                `Server Error while getting active books for user: ${error}`
+            )
+        );
+    }
+};
+
+// get all books for admin
+const getAllBooksAdmin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const books = await Book.find();
+        if (!books) {
+            throw new ApiError(404, "Book not found");
+        }
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(
+                    200,
+                    books,
+                    "Book for admin found successfully."
+                )
+            );
+    } catch (error) {
+        console.log(`Error getting the books : ${error}`);
+        return next(
+            new ApiError(500, `Server Error while getting books: ${error}`)
+        );
+    }
+};
+export {
+    createBook,
+    updateBook,
+    deleteBook,
+    getBookByFilter,
+    getBookById,
+    getActiveBooksUser,
+    getAllBooksAdmin,
+};

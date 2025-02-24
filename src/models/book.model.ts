@@ -1,6 +1,19 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
-const bookSchema = new Schema(
+interface IBook extends Document {
+    title: string;
+    author: string;
+    isbn: string;
+    publishedYear: number;
+    thumbnail: string;
+    description: string;
+    isAvailable: boolean;
+    expectedAvailable: Date | null;
+    averageRating: number;
+    genre: string;
+}
+
+const bookSchema = new Schema<IBook>(
     {
         title: {
             type: String,
@@ -48,4 +61,4 @@ const bookSchema = new Schema(
     { timestamps: true }
 );
 
-export const Book = new mongoose.model("Book", bookSchema);
+export const Book = mongoose.model<IBook>("Book", bookSchema);

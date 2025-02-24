@@ -1,7 +1,13 @@
 import Joi from "joi";
+import { Request, Response, NextFunction } from "express";
 
 // validation
-const joiValidation = async (schema, req, res, next) => {
+const joiValidation = async (
+    schema: Joi.ObjectSchema<any>,
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         await schema.validateAsync(req.body, { abortEarly: false });
         next();
@@ -14,7 +20,11 @@ const joiValidation = async (schema, req, res, next) => {
 };
 
 // register validation
-const registerUserValidator = async (req, res, next) => {
+const registerUserValidator = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     const registerSchema = Joi.object({
         fName: Joi.string().required(),
         lName: Joi.string().required(),
@@ -33,7 +43,11 @@ const registerUserValidator = async (req, res, next) => {
 };
 
 // login validation
-const loginUserValidator = async (req, res, next) => {
+const loginUserValidator = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     const loginSchema = Joi.object({
         email: Joi.string().email({ minDomainSegments: 2 }).required(),
         password: Joi.string().required(),
@@ -43,7 +57,11 @@ const loginUserValidator = async (req, res, next) => {
 };
 
 // create book validaton
-const createBookValidator = async (req, res, next) => {
+const createBookValidator = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     const bookSchema = Joi.object({
         title: Joi.string().required(),
         author: Joi.string().required(),

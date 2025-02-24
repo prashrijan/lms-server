@@ -9,7 +9,6 @@ import {
     registerUserValidator,
     loginUserValidator,
 } from "../middlewares/joiValidation.js";
-import { authenticateUser, isAdmin } from "../middlewares/authenticateUser.js";
 
 const authRouter = express.Router();
 

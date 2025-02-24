@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { conf } from "../conf/conf.js";
 
-export const connectDb = async () => {
+export const connectDb = async (): Promise<void> => {
     try {
         const connection = await mongoose.connect(
             `${conf.dbUri}/${conf.dbName}`

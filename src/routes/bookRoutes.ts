@@ -7,6 +7,8 @@ import {
     getBookByFilter,
     updateBook,
     getBookById,
+    getActiveBooksUser,
+    getAllBooksAdmin,
 } from "../controllers/bookControllers.js";
 
 const bookRouter = express.Router();
@@ -15,7 +17,7 @@ const bookRouter = express.Router();
 // private api
 bookRouter
     .route("/create-book")
-    .post(createBookValidator, authenticateUser, isAdmin, createBook);
+    .post(authenticateUser, isAdmin, createBookValidator, createBook);
 
 bookRouter
     .route("/update-book/:id")
@@ -25,7 +27,13 @@ bookRouter
     .route("/delete-book/:id")
     .delete(authenticateUser, isAdmin, deleteBook);
 
+bookRouter
+    .route("/get-books-admin")
+    .get(authenticateUser, isAdmin, getAllBooksAdmin);
+
 // public api
 bookRouter.route("/get-book/?query").get(getBookByFilter);
 bookRouter.route("/get-book/:id").get(getBookById);
+bookRouter.route("/get-books-user").get(getActiveBooksUser);
+
 export default bookRouter;

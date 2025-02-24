@@ -1,8 +1,29 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { conf } from "../conf/conf.js";
+import { Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
 
-const authenticateUser = async (req, res, next) => {
+interface AuthUser extends Request {
+    userData?: {
+        _id: mongoose.Types.ObjectId;
+        fName: string;
+        lName: string;
+        email: string;
+        password: string;
+        phone: string;
+        role: string;
+        createdAt: Date;
+        updatedAt: Date;
+        __v: number;
+    };
+}
+
+const authenticateUser = async (
+    req: AuthUser,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         // get the token from the header
         // decode the token
@@ -22,6 +43,8 @@ const authenticateUser = async (req, res, next) => {
             email: decoded.email,
         });
 
+        console.log(userData);
+
         if (!userData) {
             return res.status(401).json({
                 status: "error",
@@ -40,9 +63,13 @@ const authenticateUser = async (req, res, next) => {
     }
 };
 
-const isAdmin = async (req, res, next) => {
+const isAdmin = async (
+    req: AuthUser,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
-        if (req.userData.role === "admin") {
+        if (req.userData?.role === "admin") {
             next();
         } else {
             return res.status(400).json({

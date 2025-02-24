@@ -1,17 +1,16 @@
 import express from "express";
 import cors from "cors";
-import { conf } from "./src/conf/conf.js";
-import { connectDb } from "./src/db/dbConfig.js";
-import authRouter from "./src/routes/authRoutes.js";
-import bookRouter from "./src/routes/bookRoutes.js";
-import { errorMiddleware } from "./src/middlewares/errorMiddleware.js";
+import { conf } from "./conf/conf.js";
+import { connectDb } from "./db/dbConfig.js";
+import authRouter from "./routes/authRoutes.js";
+import bookRouter from "./routes/bookRoutes.js";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();
 const PORT = conf.port;
 
 app.use(cors());
 app.use(express.json());
-app.use(errorMiddleware);
 
 // database connection
 connectDb()
@@ -29,6 +28,7 @@ connectDb()
     })
     .catch((err) => `Error connecting database to the server: ${err}`);
 
+app.use(errorMiddleware);
 // auth routes
 app.use("/api/v1/auth", authRouter);
 
