@@ -43,8 +43,6 @@ const authenticateUser = async (
             email: decoded.email,
         });
 
-        console.log(userData);
-
         if (!userData) {
             return res.status(401).json({
                 status: "error",

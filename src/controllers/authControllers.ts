@@ -4,7 +4,11 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { NextFunction, Request, Response } from "express";
 
 // register user controller
-const registerUser = async (req: Request, res: Response): Promise<any> => {
+const registerUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         const { fName, lName, email, phone, password, confirmPassword } =
             req.body;
@@ -63,12 +67,16 @@ const registerUser = async (req: Request, res: Response): Promise<any> => {
             );
     } catch (error) {
         console.error(`Internal Server Error : ${error}`);
-        throw new ApiError(500, "Server error registering user.");
+        return next(new ApiError(500, "Server error registering user."));
     }
 };
 
 // login user controller
-const loginUser = async (req: Request, res: Response): Promise<any> => {
+const loginUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
     try {
         const { email, password } = req.body;
 
@@ -92,7 +100,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
         }
 
         // generate access token
-        const accessToken = await user.generateAccessToken();
+        const accessToken = user.generateAccessToken();
 
         const foundUser = await User.findById(user._id).select("-password");
 
@@ -106,7 +114,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
             .json(new ApiResponse(200, data, "Login Successfully"));
     } catch (error) {
         console.error(`Internal Server Error : ${error}`);
-        throw new ApiError(500, "Server error while logging in.");
+        return next(new ApiError(500, "Server error while logging in."));
     }
 };
 

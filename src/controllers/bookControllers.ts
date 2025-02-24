@@ -194,7 +194,7 @@ const getBookById = async (
 
 // get all active books for user
 const getActiveBooksUser = async (
-    req: Request,
+    _req: Request,
     res: Response,
     next: NextFunction
 ): Promise<any> => {
