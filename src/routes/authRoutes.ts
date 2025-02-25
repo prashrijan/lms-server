@@ -9,6 +9,7 @@ import {
     registerUserValidator,
     loginUserValidator,
 } from "../middlewares/joiValidation.js";
+import { refreshAuthenticate } from "../middlewares/authenticateUser.js";
 
 const authRouter = express.Router();
 
@@ -16,6 +17,8 @@ const authRouter = express.Router();
 authRouter.route("/register").post(registerUserValidator, registerUser);
 authRouter.route("/login").post(loginUserValidator, loginUser);
 authRouter.route("/logout").post(logoutUser);
-authRouter.route("/refersh-token").post(refreshAccessToken);
+authRouter
+    .route("/refresh-token")
+    .post(refreshAuthenticate, refreshAccessToken);
 
 export default authRouter;

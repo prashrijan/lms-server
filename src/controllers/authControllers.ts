@@ -3,6 +3,16 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { NextFunction, Request, Response } from "express";
 
+interface userData {
+    email: string;
+}
+
+declare module "express-serve-static-core" {
+    interface Request {
+        userData?: userData;
+    }
+}
+
 // register user controller
 const registerUser = async (
     req: Request,
@@ -102,10 +112,18 @@ const loginUser = async (
         // generate access token
         const accessToken = user.generateAccessToken();
 
+        // generate refresh token
+        const refreshToken = user.generateRefreshToken();
+        await User.findOneAndUpdate(
+            { email: user.email },
+            { refreshJwt: refreshToken }
+        );
+
         const foundUser = await User.findById(user._id).select("-password");
 
         const data = {
             accessToken,
+            refreshToken,
             user: foundUser,
         };
 
@@ -121,7 +139,31 @@ const loginUser = async (
 // logoutuser controller
 const logoutUser = async () => {};
 
-// renew jwt
-const refreshAccessToken = async () => {};
+// refresh jwt controller
+const refreshAccessToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        // check authorization for refresh token
+        // check the payload decode it and get the user data and check if refresh token is in database
+        // if refresh token is not valid or not in database send to login page
+        // generate new access token store it in session storage
+
+        const user = await User.findOne({ email: req.userData.email });
+
+        const newAccessToken = user.generateAccessToken();
+
+        return res
+            .status(201)
+            .json(new ApiResponse(200, newAccessToken, "Token Refreshed"));
+    } catch (error) {
+        console.error(`Internal Server Error : ${error}`);
+        return next(
+            new ApiError(500, "Server error while renewing access token")
+        );
+    }
+};
 
 export { registerUser, loginUser, logoutUser, refreshAccessToken };

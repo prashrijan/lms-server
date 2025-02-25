@@ -14,6 +14,7 @@ interface IUser extends Document {
     role: "admin" | "student";
     createdAt: Date;
     updatedAt: Date;
+    refreshJwt: string;
     isPasswordCorrect(password: string): Promise<boolean>;
     generateAccessToken(): string;
     generateRefreshToken(): string;
@@ -47,6 +48,10 @@ const userSchema = new Schema<IUser>(
             enum: ["admin", "student"],
             default: "student",
         },
+        refreshJwt: {
+            type: String,
+            default: "",
+        },
     },
     {
         timestamps: true,
@@ -71,6 +76,13 @@ userSchema.methods.isPasswordCorrect = async function (
 userSchema.methods.generateAccessToken = function (): string {
     return jwt.sign({ email: this.email }, conf.jwtSecret, {
         expiresIn: conf.jwtExpiry,
+    });
+};
+
+// generate refresh token
+userSchema.methods.generateRefreshToken = function (): string {
+    return jwt.sign({ email: this.email }, conf.refreshJwtSecret, {
+        expiresIn: conf.refreshJwtExpiry,
     });
 };
 

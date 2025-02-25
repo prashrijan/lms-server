@@ -19,6 +19,7 @@ interface AuthUser extends Request {
     };
 }
 
+// authenticate user middleware
 const authenticateUser = async (
     req: AuthUser,
     res: Response,
@@ -56,11 +57,56 @@ const authenticateUser = async (
         console.error(`Error authenticating user: ${error}`);
         return res.status(500).json({
             status: "error",
+            message: "Error authenticating token. Token expired.",
+        });
+    }
+};
+
+// refresh token verification middleware
+const refreshAuthenticate = async (
+    req: AuthUser,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        // get the token from the header
+        // decode the token
+        // get the user data from the token
+        // send the user data to request body
+        const refreshToken = req.headers.authorization;
+
+        const decoded = jwt.verify(refreshToken, conf.refreshJwtSecret);
+
+        if (!decoded?.email) {
+            return res.status(401).json({
+                status: "error",
+                message: "Unauthorized access. Invalid token",
+            });
+        }
+
+        const userData = await User.findOne({
+            email: decoded.email,
+        });
+
+        if (!userData && userData.refreshJwt != refreshToken) {
+            return res.status(401).json({
+                status: "error",
+                message: "Unauthorized access. Invalid token 2 ",
+            });
+        }
+
+        req.userData = userData;
+        next();
+    } catch (error) {
+        console.error(`Error authenticating user: ${error}`);
+        return res.status(500).json({
+            status: "error",
             message: "Error authenticating token",
         });
     }
 };
 
+// check if admin middleware
 const isAdmin = async (
     req: AuthUser,
     res: Response,
@@ -84,4 +130,4 @@ const isAdmin = async (
     }
 };
 
-export { authenticateUser, isAdmin };
+export { authenticateUser, refreshAuthenticate, isAdmin };
