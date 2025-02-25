@@ -1,3 +1,4 @@
+import { Session } from "../models/session.model.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -112,8 +113,13 @@ const loginUser = async (
         // generate access token
         const accessToken = user.generateAccessToken();
 
+        // save accesstoken to db
+        await Session.create({
+            token: accessToken,
+        });
         // generate refresh token
         const refreshToken = user.generateRefreshToken();
+
         await User.findOneAndUpdate(
             { email: user.email },
             { refreshJwt: refreshToken }
@@ -181,6 +187,11 @@ const refreshAccessToken = async (
         const user = await User.findOne({ email: req.userData.email });
 
         const newAccessToken = user.generateAccessToken();
+
+        // save accesstoken to db
+        await Session.create({
+            token: newAccessToken,
+        });
 
         return res
             .status(201)

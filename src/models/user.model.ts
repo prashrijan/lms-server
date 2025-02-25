@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { conf } from "../conf/conf.js";
+import { Session } from "./session.model.js";
 
 // Extend mongoose.Document to include methods
 interface IUser extends Document {

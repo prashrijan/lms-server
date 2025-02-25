@@ -3,6 +3,8 @@ import { User } from "../models/user.model.js";
 import { conf } from "../conf/conf.js";
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
+import { Session } from "../models/session.model.js";
+import { ApiError } from "../utils/ApiError.js";
 
 interface AuthUser extends Request {
     userData?: {
@@ -31,7 +33,15 @@ const authenticateUser = async (
         // get the user data from the token
         // send the user data to request body
         const accessToken = req.headers.authorization;
-        const decoded = jwt.verify(accessToken, conf.jwtSecret);
+
+        const accesstokenFromDb = await Session.findOne({ token: accessToken });
+        console.log(accesstokenFromDb);
+
+        if (!accesstokenFromDb) {
+            throw new ApiError(401, "Unauthorised request. Token not found");
+        }
+
+        const decoded = jwt.verify(accesstokenFromDb.token, conf.jwtSecret);
 
         if (!decoded?.email) {
             return res.status(401).json({
@@ -57,7 +67,7 @@ const authenticateUser = async (
         console.error(`Error authenticating user: ${error}`);
         return res.status(500).json({
             status: "error",
-            message: "Error authenticating token. Token expired.",
+            message: error?.message ?? "Error validating Token",
         });
     }
 };
