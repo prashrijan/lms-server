@@ -139,6 +139,33 @@ const loginUser = async (
 // logoutuser controller
 const logoutUser = async () => {};
 
+// get user detail controller
+
+const getUserDetail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const userData = req.userData;
+
+        if (!userData) {
+            throw new ApiError(404, "User Not Found.");
+        }
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(201, userData, "User Data Found Successfully.")
+            );
+    } catch (error) {
+        console.error(`Internal Server Error : ${error}`);
+        return next(
+            new ApiError(500, "Server error while getting user detail.")
+        );
+    }
+};
+
 // refresh jwt controller
 const refreshAccessToken = async (
     req: Request,
@@ -166,4 +193,10 @@ const refreshAccessToken = async (
     }
 };
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    getUserDetail,
+    refreshAccessToken,
+};
