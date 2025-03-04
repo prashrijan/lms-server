@@ -6,6 +6,11 @@ type confType = {
     dbName: string;
     refreshJwtSecret: string;
     refreshJwtExpiry: string;
+    smtpHost: string;
+    smtpPort: number;
+    smtpEmail: string;
+    smtpPass: string;
+    rootUrl: string;
 };
 
 export const conf: confType = {
@@ -16,4 +21,9 @@ export const conf: confType = {
     dbName: process.env.DB_NAME,
     refreshJwtSecret: process.env.REFRESH_JWT_SECRET,
     refreshJwtExpiry: process.env.REFRESH_JWT_EXPIRY,
+    smtpHost: process.env.SMTP_HOST,
+    smtpPort: Number(process.env.SMTP_PORT),
+    smtpEmail: process.env.SMTP_EMAIL,
+    smtpPass: process.env.SMTP_PASS,
+    rootUrl: process.env.ROOT_URL,
 };

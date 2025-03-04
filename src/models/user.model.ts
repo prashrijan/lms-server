@@ -2,7 +2,6 @@ import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { conf } from "../conf/conf.js";
-import { Session } from "./session.model.js";
 
 // Extend mongoose.Document to include methods
 interface IUser extends Document {
@@ -16,6 +15,7 @@ interface IUser extends Document {
     createdAt: Date;
     updatedAt: Date;
     refreshJwt: string;
+    status: string;
     isPasswordCorrect(password: string): Promise<boolean>;
     generateAccessToken(): string;
     generateRefreshToken(): string;
@@ -52,6 +52,11 @@ const userSchema = new Schema<IUser>(
         refreshJwt: {
             type: String,
             default: "",
+        },
+        status: {
+            type: String,
+            default: "inactive",
+            enum: ["active", "inactive"],
         },
     },
     {

@@ -1,8 +1,11 @@
+import { conf } from "../conf/conf.js";
 import { Session } from "../models/session.model.js";
 import { User } from "../models/user.model.js";
+import { sendActivationURLEmail } from "../services/email/emailService.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { NextFunction, Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 
 interface userData {
     email: string;
@@ -76,14 +79,43 @@ const registerUser = async (
 
         // remove the password field in res
         const createdUser = await User.findById(user._id).select("-password");
+        // create a unique url
 
+        const session = await Session.create({
+            token: uuidv4(),
+            assosciate: user.email,
+        });
+
+        if (!session) {
+            return res
+                .status(500)
+                .json(new ApiError(500, "Failed to create session."));
+        }
+
+        const url = `${conf.rootUrl}/activate-user?sessionId=${session._id}&t=${session.token}`;
+
+        // send this url to email service
+
+        const emailID = await sendActivationURLEmail({
+            email: user.email,
+            url,
+            fName: user.fName,
+        });
+
+        console.log("email ID", emailID);
+
+        if (!emailID) {
+            return res
+                .status(500)
+                .json(new ApiError(500, "Failed to send activation email."));
+        }
         return res
             .status(201)
             .json(
                 new ApiResponse(
                     200,
-                    createdUser,
-                    "User registered successfully."
+                    null,
+                    "We have sent you the activation link. Please check your email and follow the instruction to activate your account."
                 )
             );
     } catch (error) {
