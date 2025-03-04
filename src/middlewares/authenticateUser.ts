@@ -35,10 +35,9 @@ const authenticateUser = async (
         const accessToken = req.headers.authorization;
 
         const accesstokenFromDb = await Session.findOne({ token: accessToken });
-        console.log(accesstokenFromDb);
 
         if (!accesstokenFromDb) {
-            throw new ApiError(401, "Unauthorised request. Token not found");
+            return new ApiError(401, "Unauthorised request. Token not found");
         }
 
         const decoded = jwt.verify(accesstokenFromDb.token, conf.jwtSecret);

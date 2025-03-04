@@ -33,15 +33,21 @@ const registerUser = async (
             !password &&
             !confirmPassword
         ) {
-            throw new ApiError(400, "All fields are required");
+            return res
+                .status(400)
+                .json(new ApiError(400, "All fields are required"));
         }
 
         // check if password and confirm password match
         if (password !== confirmPassword) {
-            throw new ApiError(
-                400,
-                "Confirm Password and password must match."
-            );
+            return res
+                .status(400)
+                .json(
+                    new ApiError(
+                        400,
+                        "Confirm Password and password must match."
+                    )
+                );
         }
 
         // check if user already exists
@@ -49,10 +55,14 @@ const registerUser = async (
             $or: [{ email }, { phone }],
         });
         if (existedUser) {
-            throw new ApiError(
-                409,
-                "User with this email or phone already exists."
-            );
+            return res
+                .status(409)
+                .json(
+                    new ApiError(
+                        409,
+                        "User with this email or phone already exists."
+                    )
+                );
         }
 
         // create the user
@@ -93,21 +103,25 @@ const loginUser = async (
 
         // check if all fields are empty
         if (!email && !password) {
-            throw new ApiError(400, "All fields are required.");
+            return res
+                .status(400)
+                .json(new ApiError(400, "All fields are required."));
         }
 
         // find the user
         const user = await User.findOne({ email });
 
         if (!user) {
-            throw new ApiError(404, "User doesnot exists.");
+            return res
+                .status(404)
+                .json(new ApiError(404, "User does not exist."));
         }
 
         // check the password
         const isPasswordValid = await user.isPasswordCorrect(password);
 
         if (!isPasswordValid) {
-            throw new ApiError(401, "Invalid password.");
+            return res.status(401).json(new ApiError(401, "Invalid password."));
         }
 
         // generate access token
@@ -146,7 +160,6 @@ const loginUser = async (
 const logoutUser = async () => {};
 
 // get user detail controller
-
 const getUserDetail = async (
     req: Request,
     res: Response,
@@ -156,7 +169,7 @@ const getUserDetail = async (
         const userData = req.userData;
 
         if (!userData) {
-            throw new ApiError(404, "User Not Found.");
+            return res.status(404).json(new ApiError(404, "User Not Found."));
         }
 
         return res

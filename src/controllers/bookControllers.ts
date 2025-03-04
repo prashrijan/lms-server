@@ -35,7 +35,7 @@ const createBook = async (
             !status &&
             !averageRating
         ) {
-            throw new ApiError(400, "All fields are required.");
+            return new ApiError(400, "All fields are required.");
         }
 
         // create the book
@@ -53,7 +53,7 @@ const createBook = async (
         });
 
         if (!book) {
-            throw new ApiError(401, "Book creation unsuccessful.");
+            return new ApiError(401, "Book creation unsuccessful.");
         }
 
         return res
@@ -85,7 +85,7 @@ const updateBook = async (
         });
 
         if (!update) {
-            throw new ApiError(400, "Error updating the book.");
+            return new ApiError(400, "Error updating the book.");
         }
 
         return res
@@ -111,7 +111,7 @@ const deleteBook = async (
         const bookToDelete = await Book.findById({ _id: bookId });
 
         if (!bookToDelete) {
-            throw new ApiError(404, "Book doesnot exists.");
+            return new ApiError(404, "Book doesnot exists.");
         }
 
         // delete the book
@@ -119,7 +119,7 @@ const deleteBook = async (
         const deletionResult = await Book.deleteOne({ _id: bookId });
 
         if (deletionResult.deletedCount === 0) {
-            throw new ApiError(400, "Book deletion was unsuccessful.");
+            return new ApiError(400, "Book deletion was unsuccessful.");
         }
         return res
             .status(201)
@@ -148,7 +148,7 @@ const getBookByFilter = async (
         const books = await Book.find(filter);
 
         if (books.length === 0) {
-            throw new ApiError(404, "Book not found");
+            return new ApiError(404, "Book not found");
         }
 
         return res
@@ -178,7 +178,7 @@ const getBookById = async (
         const books = await Book.findById({ _id: bookId });
 
         if (!books) {
-            throw new ApiError(404, "Book not found");
+            return new ApiError(404, "Book not found");
         }
 
         return res
@@ -204,7 +204,7 @@ const getActiveBooksUser = async (
         });
 
         if (!books) {
-            throw new ApiError(404, "Book not found");
+            return new ApiError(404, "Book not found");
         }
         return res
             .status(201)
@@ -235,7 +235,7 @@ const getAllBooksAdmin = async (
     try {
         const books = await Book.find();
         if (!books) {
-            throw new ApiError(404, "Book not found");
+            return new ApiError(404, "Book not found");
         }
         return res
             .status(201)
