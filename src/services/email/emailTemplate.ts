@@ -15,3 +15,17 @@ export const userActivationURLEmailTemplate = ({ email, url, fName }) => {
 
     return message;
 };
+export const userActivationNotificationTemplate = ({ email, fName }) => {
+    let message = {
+        from: `Readify <${conf.smtpEmail}>`,
+        to: `${email}`,
+        subject: "Your Readify Account Has Been Activated",
+        text: `Hello, ${fName}. Your Readify account has been successfully activated. You can now log in and start using our services.`,
+        html: `
+            <p>Your account has been successfully activated. You can now log in and start using our services.</p>
+            <p>Regards,<br/>Readify</p>
+        `,
+    };
+
+    return message;
+};

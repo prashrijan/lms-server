@@ -1,7 +1,10 @@
 import { conf } from "../conf/conf.js";
 import { Session } from "../models/session.model.js";
 import { User } from "../models/user.model.js";
-import { sendActivationURLEmail } from "../services/email/emailService.js";
+import {
+    sendActivationNotificationEmail,
+    sendActivationURLEmail,
+} from "../services/email/emailService.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { NextFunction, Request, Response } from "express";
@@ -121,6 +124,62 @@ const registerUser = async (
     } catch (error) {
         console.error(`Internal Server Error : ${error}`);
         return next(new ApiError(500, "Server error registering user."));
+    }
+};
+
+// activate user controller
+const activateUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        // get the session id and token from the frontend
+        const { sessionId, t } = req.body;
+
+        // find the session in the database and verify and delete
+        const session = await Session.findOneAndDelete({
+            _id: sessionId,
+            token: t,
+        });
+
+        if (!session) {
+            return res
+                .status(400)
+                .json(new ApiError(400, "Invalid or expired session."));
+        }
+
+        // find the user with the associate email and verify and activate if the account exists
+        const user = await User.findOneAndUpdate(
+            {
+                email: session.assosciate,
+            },
+            {
+                status: "active",
+            },
+            {
+                new: true,
+            }
+        );
+
+        if (!user) {
+            return res.status(404).json(new ApiError(404, "User not found."));
+        }
+
+        sendActivationNotificationEmail({
+            email: user.email,
+            fName: user.fName,
+            url: "",
+        });
+
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(201, user, "Account is activated successfully.")
+            );
+    } catch (error) {
+        console.error(`Internal Server Error : ${error}`);
+        return next(new ApiError(500, "Server error while activating user."));
     }
 };
 
@@ -255,4 +314,5 @@ export {
     logoutUser,
     getUserDetail,
     refreshAccessToken,
+    activateUser,
 };

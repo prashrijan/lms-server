@@ -5,6 +5,7 @@ import {
     logoutUser,
     refreshAccessToken,
     getUserDetail,
+    activateUser,
 } from "../controllers/authControllers.js";
 import {
     registerUserValidator,
@@ -22,6 +23,7 @@ authRouter.route("/").get(authenticateUser, getUserDetail);
 authRouter.route("/register").post(registerUserValidator, registerUser);
 authRouter.route("/login").post(loginUserValidator, loginUser);
 authRouter.route("/logout").post(logoutUser);
+authRouter.route("/activate-user").post(activateUser);
 authRouter.route("/refresh-token").get(refreshAuthenticate, refreshAccessToken);
 
 export default authRouter;

@@ -1,4 +1,7 @@
-import { userActivationURLEmailTemplate } from "./emailTemplate.js";
+import {
+    userActivationNotificationTemplate,
+    userActivationURLEmailTemplate,
+} from "./emailTemplate.js";
 import { emailTransporter } from "./transporter.js";
 type emailObj = {
     email: string;
@@ -19,5 +22,19 @@ export const sendActivationURLEmail = async (obj: emailObj) => {
     } catch (error) {
         console.error(`Error sending email: ${error.message}`);
         throw new Error("Failed to send activation email");
+    }
+};
+
+export const sendActivationNotificationEmail = async (obj: emailObj) => {
+    try {
+        let transporter = emailTransporter();
+
+        const info = await transporter.sendMail(
+            userActivationNotificationTemplate(obj)
+        );
+        return info.messageId;
+    } catch (error) {
+        console.error(`Error sending email: ${error.message}`);
+        throw new Error("Failed to activate account");
     }
 };
