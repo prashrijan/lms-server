@@ -9,6 +9,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { NextFunction, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { isPasswordStrong } from "../utils/checkPasswordStrength.js";
 
 interface userData {
     email: string;
@@ -44,6 +45,18 @@ const registerUser = async (
                 .json(new ApiError(400, "All fields are required"));
         }
 
+        const isStrongPassword = isPasswordStrong(password);
+
+        if (!isStrongPassword) {
+            return res
+                .status(400)
+                .json(
+                    new ApiError(
+                        400,
+                        "Password must be at least 6 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character."
+                    )
+                );
+        }
         // check if password and confirm password match
         if (password !== confirmPassword) {
             return res
@@ -184,68 +197,65 @@ const activateUser = async (
 };
 
 // login user controller
-// const loginUser = async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-// ): Promise<any> => {
-//     try {
-//         const { email, password } = req.body;
+const loginUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        // get email password
+        const { email, password } = req.body;
 
-//         // check if all fields are empty
-//         if (!email && !password) {
-//             return res
-//                 .status(400)
-//                 .json(new ApiError(400, "All fields are required."));
-//         }
+        if (!email || !password) {
+            return res
+                .status(400)
+                .json(new ApiError(404, "All fields are required"));
+        }
 
-//         // find the user
-//         const user = await User.findOne({ email });
+        // find the user
+        const user = await User.findOne({ email });
 
-//         if (!user) {
-//             return res
-//                 .status(404)
-//                 .json(new ApiError(404, "User does not exist."));
-//         }
+        if (!user) {
+            return res
+                .status(404)
+                .json(new ApiError(404, "User with the email doesnot exist."));
+        }
 
-//         // check the password
-//         const isPasswordValid = await user.isPasswordCorrect(password);
+        // check if password is correct
+        const isPasswordCorrect = await user.isPasswordCorrect(password);
 
-//         if (!isPasswordValid) {
-//             return res.status(401).json(new ApiError(401, "Invalid password."));
-//         }
+        if (!isPasswordCorrect) {
+            return res.status(401).json(new ApiError(401, "Invalid password."));
+        }
 
-//         // generate access token
-//         const accessToken = user.generateAccessToken();
+        // generate access token and refresh token, store access token in session table and refresh token in users table
+        const accessToken = user.generateAccessToken();
 
-//         // save accesstoken to db
-//         await Session.create({
-//             token: accessToken,
-//         });
-//         // generate refresh token
-//         const refreshToken = user.generateRefreshToken();
+        await Session.create({
+            token: accessToken,
+            assosciate: user.email,
+        });
 
-//         await User.findOneAndUpdate(
-//             { email: user.email },
-//             { refreshJwt: refreshToken }
-//         );
+        const refreshAccessToken = user.generateRefreshToken();
 
-//         const foundUser = await User.findById(user._id).select("-password");
+        await User.findOneAndUpdate(
+            { email: user.email },
+            { refreshJwt: refreshAccessToken }
+        );
 
-//         const data = {
-//             accessToken,
-//             refreshToken,
-//             user: foundUser,
-//         };
+        const data = {
+            accessToken,
+            refreshAccessToken,
+        };
 
-//         return res
-//             .status(201)
-//             .json(new ApiResponse(200, data, "Login Successfully"));
-//     } catch (error) {
-//         console.error(`Internal Server Error : ${error}`);
-//         return next(new ApiError(500, "Server error while logging in."));
-//     }
-// };
+        return res
+            .status(200)
+            .json(new ApiResponse(200, data, "Login Successful."));
+    } catch (error) {
+        console.error(`Internal Server Error : ${error}`);
+        return next(new ApiError(500, "Server error while logging in."));
+    }
+};
 
 // logoutuser controller
 const logoutUser = async () => {};
@@ -295,6 +305,7 @@ const refreshAccessToken = async (
         // save accesstoken to db
         await Session.create({
             token: newAccessToken,
+            email: user.email,
         });
 
         return res
