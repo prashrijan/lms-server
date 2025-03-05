@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateUser, isAdmin } from "../middlewares/authenticateUser.js";
-import { createBookValidator } from "../middlewares/joiValidation.js";
+import { createBookValidator } from "../middlewares/validations/books/bookValidations.js";
 import {
     createBook,
     deleteBook,

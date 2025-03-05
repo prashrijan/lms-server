@@ -184,68 +184,68 @@ const activateUser = async (
 };
 
 // login user controller
-const loginUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<any> => {
-    try {
-        const { email, password } = req.body;
+// const loginUser = async (
+//     req: Request,
+//     res: Response,
+//     next: NextFunction
+// ): Promise<any> => {
+//     try {
+//         const { email, password } = req.body;
 
-        // check if all fields are empty
-        if (!email && !password) {
-            return res
-                .status(400)
-                .json(new ApiError(400, "All fields are required."));
-        }
+//         // check if all fields are empty
+//         if (!email && !password) {
+//             return res
+//                 .status(400)
+//                 .json(new ApiError(400, "All fields are required."));
+//         }
 
-        // find the user
-        const user = await User.findOne({ email });
+//         // find the user
+//         const user = await User.findOne({ email });
 
-        if (!user) {
-            return res
-                .status(404)
-                .json(new ApiError(404, "User does not exist."));
-        }
+//         if (!user) {
+//             return res
+//                 .status(404)
+//                 .json(new ApiError(404, "User does not exist."));
+//         }
 
-        // check the password
-        const isPasswordValid = await user.isPasswordCorrect(password);
+//         // check the password
+//         const isPasswordValid = await user.isPasswordCorrect(password);
 
-        if (!isPasswordValid) {
-            return res.status(401).json(new ApiError(401, "Invalid password."));
-        }
+//         if (!isPasswordValid) {
+//             return res.status(401).json(new ApiError(401, "Invalid password."));
+//         }
 
-        // generate access token
-        const accessToken = user.generateAccessToken();
+//         // generate access token
+//         const accessToken = user.generateAccessToken();
 
-        // save accesstoken to db
-        await Session.create({
-            token: accessToken,
-        });
-        // generate refresh token
-        const refreshToken = user.generateRefreshToken();
+//         // save accesstoken to db
+//         await Session.create({
+//             token: accessToken,
+//         });
+//         // generate refresh token
+//         const refreshToken = user.generateRefreshToken();
 
-        await User.findOneAndUpdate(
-            { email: user.email },
-            { refreshJwt: refreshToken }
-        );
+//         await User.findOneAndUpdate(
+//             { email: user.email },
+//             { refreshJwt: refreshToken }
+//         );
 
-        const foundUser = await User.findById(user._id).select("-password");
+//         const foundUser = await User.findById(user._id).select("-password");
 
-        const data = {
-            accessToken,
-            refreshToken,
-            user: foundUser,
-        };
+//         const data = {
+//             accessToken,
+//             refreshToken,
+//             user: foundUser,
+//         };
 
-        return res
-            .status(201)
-            .json(new ApiResponse(200, data, "Login Successfully"));
-    } catch (error) {
-        console.error(`Internal Server Error : ${error}`);
-        return next(new ApiError(500, "Server error while logging in."));
-    }
-};
+//         return res
+//             .status(201)
+//             .json(new ApiResponse(200, data, "Login Successfully"));
+//     } catch (error) {
+//         console.error(`Internal Server Error : ${error}`);
+//         return next(new ApiError(500, "Server error while logging in."));
+//     }
+// };
 
 // logoutuser controller
 const logoutUser = async () => {};

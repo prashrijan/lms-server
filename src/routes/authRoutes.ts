@@ -10,7 +10,8 @@ import {
 import {
     registerUserValidator,
     loginUserValidator,
-} from "../middlewares/joiValidation.js";
+    activateUserValidator,
+} from "../middlewares/validations/auth/authValidation.js";
 import {
     authenticateUser,
     refreshAuthenticate,
@@ -23,7 +24,7 @@ authRouter.route("/").get(authenticateUser, getUserDetail);
 authRouter.route("/register").post(registerUserValidator, registerUser);
 authRouter.route("/login").post(loginUserValidator, loginUser);
 authRouter.route("/logout").post(logoutUser);
-authRouter.route("/activate-user").post(activateUser);
+authRouter.route("/activate-user").post(activateUserValidator, activateUser);
 authRouter.route("/refresh-token").get(refreshAuthenticate, refreshAccessToken);
 
 export default authRouter;
