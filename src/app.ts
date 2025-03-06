@@ -5,6 +5,7 @@ import { connectDb } from "./db/dbConfig.js";
 import authRouter from "./routes/authRoutes.js";
 import bookRouter from "./routes/bookRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import userRouter from "./routes/userRoute.js";
 
 const app = express();
 const PORT = conf.port;
@@ -34,3 +35,6 @@ app.use("/api/v1/auth", authRouter);
 
 // book routes
 app.use("/api/v1/books", bookRouter);
+
+// user routes
+app.use("/api/v1/users", userRouter);

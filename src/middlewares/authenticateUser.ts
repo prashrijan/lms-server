@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import { Session } from "../models/session.model.js";
 import { ApiError } from "../utils/ApiError.js";
 
-interface AuthUser extends Request {
+export interface AuthUser extends Request {
     userData?: {
         _id: mongoose.Types.ObjectId;
         fName: string;
@@ -15,6 +15,7 @@ interface AuthUser extends Request {
         password: string;
         phone: string;
         role: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
         __v: number;
@@ -29,10 +30,17 @@ const authenticateUser = async (
 ): Promise<any> => {
     try {
         // get the token from the header
-        // decode the token
+        // check if the token is in database
+        // decode the token from the database
         // get the user data from the token
         // send the user data to request body
         const accessToken = req.headers.authorization;
+
+        if (!accessToken) {
+            return res
+                .status(401)
+                .json(new ApiError(401, "Access Token is missing"));
+        }
 
         const accesstokenFromDb = await Session.findOne({ token: accessToken });
 
@@ -40,9 +48,12 @@ const authenticateUser = async (
             return new ApiError(401, "Unauthorised request. Token not found");
         }
 
-        const decoded = jwt.verify(accesstokenFromDb.token, conf.jwtSecret);
+        const decoded = jwt.verify(
+            accesstokenFromDb.token,
+            conf.jwtSecret
+        ) as jwt.JwtPayload;
 
-        if (!decoded?.email) {
+        if (!decoded.email) {
             return res.status(401).json({
                 status: "error",
                 message: "Unauthorized access. Invalid token 1",
@@ -51,7 +62,7 @@ const authenticateUser = async (
 
         const userData = await User.findOne({
             email: decoded.email,
-        });
+        }).select("-password -refreshJwt");
 
         if (!userData) {
             return res.status(401).json({
@@ -60,14 +71,26 @@ const authenticateUser = async (
             });
         }
 
+        if (userData.status !== "active") {
+            return res
+                .status(403)
+                .json(
+                    new ApiError(
+                        403,
+                        "User is not authorized to get the profile"
+                    )
+                );
+        }
+
         req.userData = userData;
         next();
     } catch (error) {
         console.error(`Error authenticating user: ${error}`);
-        return res.status(500).json({
-            status: "error",
-            message: error?.message ?? "Error validating Token",
-        });
+        return res
+            .status(500)
+            .json(
+                new ApiError(500, error.message ?? "Error validating token.")
+            );
     }
 };
 
@@ -84,9 +107,12 @@ const refreshAuthenticate = async (
         // send the user data to request body
         const refreshToken = req.headers.authorization;
 
-        const decoded = jwt.verify(refreshToken, conf.refreshJwtSecret);
+        const decoded = jwt.verify(
+            refreshToken,
+            conf.refreshJwtSecret
+        ) as jwt.JwtPayload;
 
-        if (!decoded?.email) {
+        if (!decoded.email) {
             return res.status(401).json({
                 status: "error",
                 message: "Unauthorized access. Invalid token",

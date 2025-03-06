@@ -4,7 +4,6 @@ import {
     loginUser,
     logoutUser,
     refreshAccessToken,
-    getUserDetail,
     activateUser,
 } from "../controllers/authControllers.js";
 import {
@@ -12,15 +11,12 @@ import {
     loginUserValidator,
     activateUserValidator,
 } from "../middlewares/validations/auth/authValidation.js";
-import {
-    authenticateUser,
-    refreshAuthenticate,
-} from "../middlewares/authenticateUser.js";
+import { refreshAuthenticate } from "../middlewares/authenticateUser.js";
 
 const authRouter = express.Router();
 
 // auth routes
-authRouter.route("/").get(authenticateUser, getUserDetail);
+
 authRouter.route("/register").post(registerUserValidator, registerUser);
 authRouter.route("/login").post(loginUserValidator, loginUser);
 authRouter.route("/logout").post(logoutUser);
