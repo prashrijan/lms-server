@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { conf } from "../conf/conf.js";
 
 // Extend mongoose.Document to include methods
@@ -80,16 +80,20 @@ userSchema.methods.isPasswordCorrect = async function (
 
 // Generate access token
 userSchema.methods.generateAccessToken = function (): string {
-    return jwt.sign({ email: this.email }, conf.jwtSecret, {
-        expiresIn: conf.jwtExpiry,
-    });
+    const signOptions: SignOptions = {
+        expiresIn: conf.jwtExpiry as number,
+    };
+
+    return jwt.sign({ email: this.email }, conf.jwtSecret, signOptions);
 };
 
 // generate refresh token
 userSchema.methods.generateRefreshToken = function (): string {
-    return jwt.sign({ email: this.email }, conf.refreshJwtSecret, {
-        expiresIn: conf.refreshJwtExpiry,
-    });
+    const signOptions: SignOptions = {
+        expiresIn: conf.refreshJwtExpiry as number,
+    };
+
+    return jwt.sign({ email: this.email }, conf.refreshJwtSecret, signOptions);
 };
 
 export const User = mongoose.model<IUser>("User", userSchema);

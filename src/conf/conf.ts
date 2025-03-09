@@ -2,10 +2,10 @@ type confType = {
     port: string;
     dbUri: string;
     jwtSecret: string;
-    jwtExpiry: string;
+    jwtExpiry: number;
     dbName: string;
     refreshJwtSecret: string;
-    refreshJwtExpiry: string;
+    refreshJwtExpiry: number;
     smtpHost: string;
     smtpPort: number;
     smtpEmail: string;
@@ -17,10 +17,10 @@ export const conf: confType = {
     port: process.env.PORT,
     dbUri: process.env.DB_URI,
     jwtSecret: process.env.JWT_SECRET,
-    jwtExpiry: process.env.JWT_EXPIRY,
+    jwtExpiry: Number(process.env.JWT_EXPIRY),
     dbName: process.env.DB_NAME,
     refreshJwtSecret: process.env.REFRESH_JWT_SECRET,
-    refreshJwtExpiry: process.env.REFRESH_JWT_EXPIRY,
+    refreshJwtExpiry: Number(process.env.REFRESH_JWT_EXPIRY),
     smtpHost: process.env.SMTP_HOST,
     smtpPort: Number(process.env.SMTP_PORT),
     smtpEmail: process.env.SMTP_EMAIL,

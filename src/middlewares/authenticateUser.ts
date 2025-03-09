@@ -101,43 +101,54 @@ const refreshAuthenticate = async (
     next: NextFunction
 ): Promise<any> => {
     try {
-        // get the token from the header
-        // decode the token
-        // get the user data from the token
-        // send the user data to request body
+        // get the refresh token from the headers
         const refreshToken = req.headers.authorization;
-
+        if (!refreshToken) {
+            return res
+                .status(401)
+                .json(new ApiError(401, "Refresh Token is missing"));
+        }
+        // decode the token and check if there is email
         const decoded = jwt.verify(
             refreshToken,
             conf.refreshJwtSecret
         ) as jwt.JwtPayload;
 
         if (!decoded.email) {
-            return res.status(401).json({
-                status: "error",
-                message: "Unauthorized access. Invalid token",
-            });
+            return res
+                .status(401)
+                .json(
+                    new ApiError(
+                        401,
+                        "Unauthorized access. Invalid refresh token"
+                    )
+                );
         }
-
-        const userData = await User.findOne({
+        // check if user exists with the refresh token
+        const user = await User.findOne({
             email: decoded.email,
+            refreshJwt: refreshToken,
         });
 
-        if (!userData && userData.refreshJwt != refreshToken) {
-            return res.status(401).json({
-                status: "error",
-                message: "Unauthorized access. Invalid token 2 ",
-            });
+        if (!user) {
+            return res
+                .status(401)
+                .json(
+                    new ApiError(
+                        401,
+                        "Unauthorized access. Invalid refresh token"
+                    )
+                );
         }
 
-        req.userData = userData;
+        // send the user data to the request body if everything is 200
+        req.userData = user;
         next();
     } catch (error) {
         console.error(`Error authenticating user: ${error}`);
-        return res.status(500).json({
-            status: "error",
-            message: "Error authenticating token",
-        });
+        return res
+            .status(500)
+            .json(new ApiError(500, "Error authenticating token"));
     }
 };
 
