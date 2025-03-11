@@ -35,6 +35,7 @@ const authenticateUser = async (
         // get the user data from the token
         // send the user data to request body
         const accessToken = req.headers.authorization;
+        console.log(accessToken);
 
         if (!accessToken) {
             return res
@@ -43,6 +44,7 @@ const authenticateUser = async (
         }
 
         const accesstokenFromDb = await Session.findOne({ token: accessToken });
+        console.log(2323, accesstokenFromDb);
 
         if (!accesstokenFromDb) {
             return new ApiError(401, "Unauthorised request. Token not found");
@@ -53,6 +55,7 @@ const authenticateUser = async (
             conf.jwtSecret
         ) as jwt.JwtPayload;
 
+        console.log(1111, decoded);
         if (!decoded.email) {
             return res.status(401).json({
                 status: "error",
