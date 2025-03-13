@@ -258,7 +258,53 @@ const loginUser = async (
 };
 
 // logoutuser controller
-const logoutUser = async () => {};
+const logoutUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const token = req.headers.authorization;
+
+        if (!token) {
+            return res
+                .status(400)
+                .json(new ApiError(400, "Authorization token is required"));
+        }
+
+        const user = await User.findOneAndUpdate(
+            {
+                email: req.userData?.email,
+            },
+            {
+                refreshJwt: "",
+            }
+        );
+
+        if (!user) {
+            return res.status(404).json(new ApiError(404, "User not found."));
+        }
+
+        const session = await Session.findOneAndDelete({
+            assosciate: req.userData.email,
+        });
+
+        if (!session) {
+            return res
+                .status(404)
+                .json(new ApiError(404, "Session not found."));
+        }
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, null, "Logout successsful."));
+    } catch (error) {
+        console.error(`Internal Server Error : ${error}`);
+        return next(
+            new ApiError(500, "Server error while logging out.", error)
+        );
+    }
+};
 
 // refresh jwt controller
 const refreshAccessToken = async (
