@@ -12,7 +12,17 @@ import { v4 as uuidv4 } from "uuid";
 import { isPasswordStrong } from "../utils/checkPasswordStrength.js";
 
 interface userData {
+    _id: string;
+    fName: string;
+    lName: string;
     email: string;
+    password: string;
+    phone: string;
+    role: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+    __v: number;
 }
 
 declare module "express-serve-static-core" {

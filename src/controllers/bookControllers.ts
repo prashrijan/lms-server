@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { Book } from "../models/book.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
 // create book (admin only)
 const createBook = async (
     req: Request,
@@ -22,6 +21,12 @@ const createBook = async (
             averageRating,
             description,
         } = req.body;
+
+        const admin = req.userData;
+
+        if (!admin) {
+            return next(new ApiError(403, "Unauthorized access. Admins only."));
+        }
 
         // check if all fields are empty
         if (
@@ -50,6 +55,14 @@ const createBook = async (
             status,
             averageRating,
             description,
+            addedBy: {
+                name: admin.fName,
+                adminId: admin._id,
+            },
+            lastUpdatedBy: {
+                name: admin.fName,
+                adminId: admin._id,
+            },
         });
 
         if (!book) {

@@ -2,13 +2,13 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { conf } from "../conf/conf.js";
 import { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
+
 import { Session } from "../models/session.model.js";
 import { ApiError } from "../utils/ApiError.js";
 
 export interface AuthUser extends Request {
-    userData?: {
-        _id: mongoose.Types.ObjectId;
+    userData: {
+        _id: string;
         fName: string;
         lName: string;
         email: string;
@@ -65,7 +65,9 @@ const authenticateUser = async (
 
         const userData = await User.findOne({
             email: decoded.email,
-        }).select("-password -refreshJwt");
+        })
+            .select("-password -refreshJwt")
+            .lean();
 
         if (!userData) {
             return res.status(401).json({
@@ -85,7 +87,7 @@ const authenticateUser = async (
                 );
         }
 
-        req.userData = userData;
+        req.userData = userData as unknown as AuthUser["userData"];
         next();
     } catch (error) {
         console.error(`Error authenticating user: ${error}`);
@@ -145,7 +147,7 @@ const refreshAuthenticate = async (
         }
 
         // send the user data to the request body if everything is 200
-        req.userData = user;
+        req.userData = user as unknown as AuthUser["userData"];
         next();
     } catch (error) {
         console.error(`Error authenticating user: ${error}`);
