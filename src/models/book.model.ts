@@ -11,6 +11,14 @@ interface IBook extends Document {
     expectedAvailable: Date | null;
     averageRating: number;
     genre: string;
+    addedBy: {
+        name: string;
+        adminId: mongoose.Types.ObjectId;
+    };
+    lastUpdatedBy: {
+        name: string;
+        adminId: mongoose.Types.ObjectId;
+    };
 }
 
 const bookSchema = new Schema<IBook>(
@@ -43,7 +51,7 @@ const bookSchema = new Schema<IBook>(
         },
         isAvailable: {
             type: Boolean,
-            default: true,
+            default: false,
         },
         expectedAvailable: {
             type: Date,
@@ -56,6 +64,22 @@ const bookSchema = new Schema<IBook>(
         genre: {
             type: String,
             required: true,
+        },
+        addedBy: {
+            name: {
+                type: String,
+            },
+            adminId: {
+                type: mongoose.Types.ObjectId,
+            },
+        },
+        lastUpdatedBy: {
+            name: {
+                type: String,
+            },
+            adminId: {
+                type: mongoose.Types.ObjectId,
+            },
         },
     },
     { timestamps: true }
