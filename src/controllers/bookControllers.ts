@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Book } from "../models/book.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import slugify from "slugify";
 // create book (admin only)
 const createBook = async (
     req: Request,
@@ -63,6 +64,10 @@ const createBook = async (
                 name: admin.fName,
                 adminId: admin._id,
             },
+            slug: slugify(title, {
+                lower: true,
+                trim: true,
+            }),
         });
 
         if (!book) {

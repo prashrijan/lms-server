@@ -19,6 +19,7 @@ interface IBook extends Document {
         name: string;
         adminId: mongoose.Types.ObjectId;
     };
+    slug: string;
 }
 
 const bookSchema = new Schema<IBook>(
@@ -80,6 +81,11 @@ const bookSchema = new Schema<IBook>(
             adminId: {
                 type: mongoose.Types.ObjectId,
             },
+        },
+        slug: {
+            type: String,
+            unique: true,
+            index: 1,
         },
     },
     { timestamps: true }
