@@ -56,7 +56,7 @@ const createBook = async (
             averageRating,
             description,
             addedBy: {
-                name: admin.fName,
+                name: `${admin.fName} ${admin.lName}`,
                 adminId: admin._id,
             },
             lastUpdatedBy: {

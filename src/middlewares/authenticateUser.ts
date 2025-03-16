@@ -169,7 +169,8 @@ const isAdmin = async (
         } else {
             return res.status(400).json({
                 status: "error",
-                message: "You are not authorised for this call.",
+                message:
+                    "You are not authorised for this call. Only admin can access the resource.",
             });
         }
     } catch (error) {
