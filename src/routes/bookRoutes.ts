@@ -10,6 +10,7 @@ import {
     getActiveBooksUser,
     getAllBooksAdmin,
 } from "../controllers/bookControllers.js";
+import { upload } from "../utils/multer.js";
 
 const bookRouter = express.Router();
 
@@ -17,7 +18,13 @@ const bookRouter = express.Router();
 // private api
 bookRouter
     .route("/create-book")
-    .post(authenticateUser, isAdmin, createBookValidator, createBook);
+    .post(
+        authenticateUser,
+        isAdmin,
+        upload.single("thumbnail"),
+        createBookValidator,
+        createBook
+    );
 
 bookRouter
     .route("/update-book/:id")
