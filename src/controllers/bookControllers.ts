@@ -97,6 +97,14 @@ const updateBook = async (
         // get the updates
         const updateToMake = req.body;
 
+        // update slug
+        if (Object.prototype.hasOwnProperty.call(updateToMake, "title")) {
+            updateToMake.slug = slugify(updateToMake.title, {
+                lower: true,
+                trim: true,
+            });
+        }
+
         // update the book
         const update = await Book.findByIdAndUpdate(bookId, updateToMake, {
             new: true,
