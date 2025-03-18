@@ -18,8 +18,7 @@ const createBook = async (
             isbn,
             genre,
             publishedYear,
-            availability,
-            status,
+            isAvailable,
             averageRating,
             description,
         } = req.body;
@@ -44,8 +43,7 @@ const createBook = async (
             !isbn &&
             !genre &&
             !publishedYear &&
-            !availability &&
-            !status &&
+            !isAvailable &&
             !averageRating
         ) {
             return new ApiError(400, "All fields are required.");
@@ -59,8 +57,7 @@ const createBook = async (
             isbn,
             genre,
             publishedYear,
-            availability,
-            status,
+            isAvailable,
             averageRating,
             description,
             addedBy: {
@@ -102,7 +99,16 @@ const updateBook = async (
         const bookId = req.params.id;
 
         // get the updates
-        const updateToMake = req.body;
+
+        let updateToMake = req.body;
+
+        // if req contains files append the path to the updates
+        if (req.file) {
+            updateToMake.thumbnail = req.file.path;
+        }
+
+        console.log(updateToMake);
+        console.log(req.body);
 
         // update slug
         if (Object.prototype.hasOwnProperty.call(updateToMake, "title")) {

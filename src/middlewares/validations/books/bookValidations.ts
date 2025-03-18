@@ -10,6 +10,7 @@ const createBookValidator = async (
     const bookSchema = Joi.object({
         title: Joi.string().required(),
         author: Joi.string().required(),
+        thumbnail: Joi.string().uri(),
         isbn: Joi.string(),
         genre: Joi.string(),
         publishedYear: Joi.number()

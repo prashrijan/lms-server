@@ -7,7 +7,7 @@ interface IBook extends Document {
     publishedYear: number;
     thumbnail: string;
     description: string;
-    isAvailable: boolean;
+    isAvailable: string;
     expectedAvailable: Date | null;
     averageRating: number;
     genre: string;
@@ -51,8 +51,8 @@ const bookSchema = new Schema<IBook>(
             default: "",
         },
         isAvailable: {
-            type: Boolean,
-            default: false,
+            type: String,
+            default: "Not Available",
         },
         expectedAvailable: {
             type: Date,

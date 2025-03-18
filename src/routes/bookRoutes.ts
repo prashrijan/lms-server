@@ -28,7 +28,7 @@ bookRouter
 
 bookRouter
     .route("/update-book/:id")
-    .post(authenticateUser, isAdmin, updateBook);
+    .patch(authenticateUser, isAdmin, upload.single("thumbnail"), updateBook);
 
 bookRouter
     .route("/delete-book/:id")
