@@ -1,5 +1,11 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+
+// const __dirname = path.resolve();
+
+// const destinationDirectory = path.join(__dirname + "/public/uploads");
+const destinationDirectory = "./public/uploads";
 
 // storage setup
 const storage: multer.StorageEngine = multer.diskStorage({
@@ -8,7 +14,11 @@ const storage: multer.StorageEngine = multer.diskStorage({
         file: Express.Multer.File,
         cb: (error: Error | null, destination: string) => void
     ) {
-        cb(null, "./public/uploads");
+        // check if directory exists if not create one
+        if (!fs.existsSync(destinationDirectory)) {
+            fs.mkdirSync(destinationDirectory, { recursive: true });
+        }
+        cb(null, destinationDirectory);
     },
     filename: function (
         req: Express.Request,
@@ -22,7 +32,6 @@ const storage: multer.StorageEngine = multer.diskStorage({
 });
 
 // filter to allow images only
-
 const fileFilter = (
     req: Express.Request,
     file: Express.Multer.File,

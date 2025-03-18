@@ -9,6 +9,7 @@ const createBook = async (
     res: Response,
     next: NextFunction
 ): Promise<any> => {
+    console.log(req.file);
     try {
         const {
             title,
@@ -22,6 +23,12 @@ const createBook = async (
             averageRating,
             description,
         } = req.body;
+
+        if (!req.file || !req.file.path) {
+            return next(new ApiError(400, "File path is required."));
+        }
+
+        const { path } = req.file;
 
         const admin = req.userData;
 
@@ -48,7 +55,7 @@ const createBook = async (
         const book = await Book.create({
             title,
             author,
-            thumbnail,
+            thumbnail: path,
             isbn,
             genre,
             publishedYear,

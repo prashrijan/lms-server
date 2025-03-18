@@ -6,13 +6,16 @@ import authRouter from "./routes/authRoutes.js";
 import bookRouter from "./routes/bookRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import userRouter from "./routes/userRoute.js";
+import path from "path";
 
 const app = express();
 const PORT = conf.port;
+const __dirname = path.resolve();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 // database connection
 connectDb()

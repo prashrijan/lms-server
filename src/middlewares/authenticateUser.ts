@@ -43,7 +43,6 @@ const authenticateUser = async (
         }
 
         const accesstokenFromDb = await Session.findOne({ token: accessToken });
-        console.log(2323, accesstokenFromDb);
 
         if (!accesstokenFromDb) {
             return new ApiError(401, "Unauthorised request. Token not found");
