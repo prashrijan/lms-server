@@ -2,7 +2,7 @@ import { Request } from "express";
 import fs from "fs";
 import path from "path";
 
-const deleteFile = (filePath: string) => {
+export const deleteFile = (filePath: string) => {
     fs.unlink(path.resolve(filePath), () => {});
 };
 

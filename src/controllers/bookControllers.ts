@@ -3,6 +3,7 @@ import { Book } from "../models/book.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import slugify from "slugify";
+import { deleteFile, deleteUploadedFiles } from "../utils/fileUtil.js";
 // create book (admin only)
 const createBook = async (
     req: Request,
@@ -106,10 +107,6 @@ const updateBook = async (
         if (req.file) {
             updateToMake.thumbnail = req.file.path;
         }
-
-        console.log(updateToMake);
-        console.log(req.body);
-
         // update slug
         if (Object.prototype.hasOwnProperty.call(updateToMake, "title")) {
             updateToMake.slug = slugify(updateToMake.title, {
@@ -149,9 +146,13 @@ const deleteBook = async (
         // check if the book exista
         const bookToDelete = await Book.findById({ _id: bookId });
 
+        console.log(bookToDelete);
+
         if (!bookToDelete) {
             return new ApiError(404, "Book doesnot exists.");
         }
+
+        deleteFile(bookToDelete.thumbnail);
 
         // delete the book
         // const isDeleted = await Book.remove(bookToDelete); (deprecated)
