@@ -6,6 +6,7 @@
     "scripts": {
         "build": "rimraf dist && tsc",
         "dev": "tsx --watch --env-file=.env src/app.ts",
+        "import-book": "tsx --watch --env-file=.env src/seeds/bookSeeds/importData.ts",
         "start": "node dist/app.js"
     },
     "author": "Prashrijan",
