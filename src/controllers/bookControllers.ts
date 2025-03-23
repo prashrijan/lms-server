@@ -240,7 +240,7 @@ const getActiveBooksUser = async (
 ): Promise<any> => {
     try {
         const books = await Book.find({
-            isAvailable: true,
+            isAvailable: "Active",
         });
 
         if (!books) {
