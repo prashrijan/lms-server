@@ -232,6 +232,40 @@ const getBookById = async (
     }
 };
 
+// get book by slug
+const getBookBySlug = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const { slug } = req.params;
+
+        const book = await Book.findOne({ slug });
+        if (!book) {
+            return res
+                .status(404)
+                .json(
+                    new ApiError(404, "Book doesnot exist or is not available.")
+                );
+        }
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, book, "Book Found Successfully."));
+    } catch (error) {
+        console.log(
+            `Error getting the single books for user using slug: ${error}`
+        );
+        return next(
+            new ApiError(
+                500,
+                `Server Error while getting single books for user using slug: ${error}`
+            )
+        );
+    }
+};
+
 // get all active books for user
 const getActiveBooksUser = async (
     _req: Request,
@@ -301,4 +335,5 @@ export {
     getBookById,
     getActiveBooksUser,
     getAllBooksAdmin,
+    getBookBySlug,
 };

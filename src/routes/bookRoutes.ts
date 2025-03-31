@@ -9,6 +9,7 @@ import {
     getBookById,
     getActiveBooksUser,
     getAllBooksAdmin,
+    getBookBySlug,
 } from "../controllers/bookControllers.js";
 import { upload } from "../utils/multer.js";
 
@@ -41,6 +42,7 @@ bookRouter
 // public api
 bookRouter.route("/get-book/?query").get(getBookByFilter);
 bookRouter.route("/get-book/:id").get(getBookById);
+bookRouter.route("/get-book-slug/:slug").get(getBookBySlug);
 bookRouter.route("/get-books-user").get(getActiveBooksUser);
 
 export default bookRouter;
